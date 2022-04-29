@@ -25,7 +25,8 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
         }
 
         [Theory]
-        [InlineData(100, 50, 10)] // 5000 ms to buffer.
+        [InlineData(500, 10, 10)] // 5,000 ms to buffer.
+        [InlineData(1000, 10, 10)] // 10,000 ms to buffer.
         public void Enumeration_AfterGivenTimeToBufferAll_YieldsAllItemsVeryQuickly(
             int sequenceLength,
             int latencyPerItemMs,
