@@ -28,7 +28,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
         [Theory]
         [InlineData(50, 10)] // 500 ms to buffer.
         [InlineData(100, 10)]  // 1000 ms to buffer.
-        public void Enumeration_AfterGivenTimeToBufferAll_YieldsAllItemsVeryQuickly(
+        public void Enumeration_AfterGivenTimeToBufferCompletely_YieldsAllItemsVeryQuickly(
             int itemCount,
             int latencyPerItemMs
         )
@@ -61,7 +61,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
         [Theory]
         [InlineData(500, 10, 50)]
-        public void Enumeration_WhenGivenMaxBufferSize_ReachesMaxBufferSize(
+        public void StartBuffering_WhenGivenTimeToBufferCompletely_ReachesMaxBufferSize(
             int itemCount,
             int latencyPerItemMs,
             int maxBufferSizeInItems
@@ -78,15 +78,15 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
             // Act
             var unitUnderTest = new BufferedEnumerable<int>(sequence, maxBufferSizeInItems).StartBuffering();
+            Thread.Sleep(itemCount * latencyPerItemMs); // Give it time to buffer completely.
 
-            Thread.Sleep(itemCount * latencyPerItemMs); // give it time to buffer completely.
-
+            // Assert
             Assert.Equal(itemsInBuffer.Count, maxBufferSizeInItems);
         }
 
         [Theory]
         [InlineData(500, 10, 50)]
-        public void Enumeration_WhenGivenMaxBufferSize_StaysWithinBufferSize(
+        public void StartBuffering_WhenGivenTimeToBufferCompletely_StaysWithinBufferSize(
             int itemCount,
             int latencyPerItemMs,
             int maxBufferSizeInItems
@@ -103,9 +103,9 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
             // Act
             var unitUnderTest = new BufferedEnumerable<int>(sequence, maxBufferSizeInItems).StartBuffering();
+            Thread.Sleep(itemCount * latencyPerItemMs); // Give it time to buffer completely.
 
-            Thread.Sleep(itemCount * latencyPerItemMs); // give it time to buffer completely.
-
+            // Assert
             Assert.InRange(itemsInBuffer.Count, 0, maxBufferSizeInItems);
         }
     }
