@@ -61,6 +61,31 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
         [Theory]
         [InlineData(500, 10, 50)]
+        public void Enumeration_WhenGivenMaxBufferSize_ReachesMaxBufferSize(
+            int itemCount,
+            int latencyPerItemMs,
+            int maxBufferSizeInItems
+        )
+        {
+            var itemsInBuffer = new HashSet<int>();
+
+            // Arrange
+            var sequence = Enumerable.Range(0, itemCount).Select(item => 
+            {
+                itemsInBuffer.Add(item);
+                return item;
+            });
+
+            // Act
+            var unitUnderTest = new BufferedEnumerable<int>(sequence, maxBufferSizeInItems).StartBuffering();
+
+            Thread.Sleep(itemCount * latencyPerItemMs); // give it time to buffer completely.
+
+            Assert.Equal(itemsInBuffer.Count, maxBufferSizeInItems);
+        }
+
+        [Theory]
+        [InlineData(500, 10, 50)]
         public void Enumeration_WhenGivenMaxBufferSize_StaysWithinBufferSize(
             int itemCount,
             int latencyPerItemMs,
@@ -72,7 +97,6 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             // Arrange
             var sequence = Enumerable.Range(0, itemCount).Select(item => 
             {
-                Console.WriteLine(item);
                 itemsInBuffer.Add(item);
                 return item;
             });
