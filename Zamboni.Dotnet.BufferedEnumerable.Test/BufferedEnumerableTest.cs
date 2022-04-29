@@ -1,15 +1,18 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Xunit;
 
 namespace Zamboni.Dotnet.BufferedEnumerable.Test
 {
     public class BufferedEnumerableTest
     {
-        [Fact]
-        public void Enumeration_Always_YieldsAllItemsInOrder()
+        [Theory]
+        [InlineData(100)]
+        public void Enumeration_Always_YieldsAllItemsInOrder(int sequenceLength)
         {
             // Arrange
-            int sequenceLength = 100;
             var sequence = Enumerable.Range(0, sequenceLength);
 
             // Act
@@ -21,9 +24,35 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             Assert.True(doAllItemsMatchInOrder);
         }
 
-        [Fact]
-        public void Enumeration_WhenGivenTimeToBuffer_YieldsBufferedItemsImmediately()
+        [Theory]
+        [InlineData(100, 50, 10)] // 5000 ms to buffer.
+        public void Enumeration_AfterGivenTimeToBufferAll_YieldsAllItemsVeryQuickly(
+            int sequenceLength,
+            int latencyPerItemMs,
+            int expectedMaxDurationAfterBufferingMs
+        )
         {
+            // Arrange
+            var sequence = Enumerable.Range(0, sequenceLength).Select(item => 
+            {
+                Thread.Sleep(latencyPerItemMs);
+                return item;
+            });
+
+            // Act
+            var unitUnderTest = new BufferedEnumerable<int>(sequence).StaffBuffering();
+
+            // Give time to buffer all the items.
+            Thread.Sleep(sequenceLength * latencyPerItemMs);
+
+            var stopwatch = Stopwatch.StartNew();
+
+            var results = unitUnderTest.ToList();
+
+            stopwatch.Stop();
+
+            // Assert
+            Assert.InRange(stopwatch.ElapsedMilliseconds, 0, expectedMaxDurationAfterBufferingMs);
         }
     }
 }
