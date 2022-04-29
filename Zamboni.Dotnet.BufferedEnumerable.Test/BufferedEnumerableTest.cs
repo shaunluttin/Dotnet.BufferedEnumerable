@@ -86,7 +86,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
         [Theory]
         [InlineData(500, 10, 50)]
-        public void StartBuffering_WhenGivenTimeToBufferCompletely_StaysWithinBufferSize(
+        public void StartBuffering_WhenGivenTimeToBufferCompletely_StaysWithinMaxBufferSize(
             int itemCount,
             int latencyPerItemMs,
             int maxBufferSizeInItems
