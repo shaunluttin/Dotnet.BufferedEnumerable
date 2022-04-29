@@ -37,11 +37,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             const int expectedMaxDurationAfterBufferingMs = 10;
 
             // Arrange
-            var sequence = Enumerable.Range(0, itemCount).Select(item => 
-            {
-                Thread.Sleep(latencyPerItemMs);
-                return item;
-            });
+            var sequence = SequenceWithLatencyPerItem(itemCount, latencyPerItemMs);
 
             // Act
             var unitUnderTest = new BufferedEnumerable<int>(sequence).StartBuffering();
@@ -70,9 +66,8 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             var itemsInBuffer = new HashSet<int>();
 
             // Arrange
-            var sequence = Enumerable.Range(0, itemCount).Select(item => 
+            var sequence = SequenceWithLatencyPerItem(itemCount, latencyPerItemMs).Select(item => 
             {
-                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
@@ -96,9 +91,8 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             var itemsInBuffer = new HashSet<int>();
 
             // Arrange
-            var sequence = Enumerable.Range(0, itemCount).Select(item => 
+            var sequence = SequenceWithLatencyPerItem(itemCount, latencyPerItemMs).Select(item => 
             {
-                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
@@ -123,9 +117,8 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             var itemsInBuffer = new HashSet<int>();
 
             // Arrange
-            var sequence = Enumerable.Range(0, itemCount).Select(item => 
+            var sequence = SequenceWithLatencyPerItem(itemCount, latencyPerItemMs).Select(item => 
             {
-                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
@@ -141,6 +134,15 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
                 Thread.Sleep(itemsToBufferEachIteration * latencyPerItemMs); // Give it time to buffer (n) items.
 
                 Assert.Equal(itemsInBuffer.Count, itemsToBufferEachIteration);
+            }
+        }
+
+        private IEnumerable<int> SequenceWithLatencyPerItem(int itemCount, int itemLatencyMilliseconds)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Thread.Sleep(itemLatencyMilliseconds);
+                yield return i;
             }
         }
     }
