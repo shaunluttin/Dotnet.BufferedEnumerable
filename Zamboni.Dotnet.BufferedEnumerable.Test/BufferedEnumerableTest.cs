@@ -72,6 +72,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             // Arrange
             var sequence = Enumerable.Range(0, itemCount).Select(item => 
             {
+                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
@@ -97,6 +98,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             // Arrange
             var sequence = Enumerable.Range(0, itemCount).Select(item => 
             {
+                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
@@ -111,6 +113,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
         [Theory]
         [InlineData(500, 10, 50)]
+        [InlineData(500, 10, 25)]
         public void ForEach_WhenGivenTimeToBufferOnEach_BuffersExpectedItemCount(
             int itemCount,
             int latencyPerItemMs,
@@ -122,6 +125,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
             // Arrange
             var sequence = Enumerable.Range(0, itemCount).Select(item => 
             {
+                Thread.Sleep(latencyPerItemMs);
                 itemsInBuffer.Add(item);
                 return item;
             });
