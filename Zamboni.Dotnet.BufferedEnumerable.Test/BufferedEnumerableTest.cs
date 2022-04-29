@@ -111,7 +111,7 @@ namespace Zamboni.Dotnet.BufferedEnumerable.Test
 
         [Theory]
         [InlineData(500, 10, 50)]
-        public void ForEachWithDelay_WhenGivenTimeToBuffer_BuffersExpectedItemCount(
+        public void ForEach_WhenGivenTimeToBufferOnEach_BuffersExpectedItemCount(
             int itemCount,
             int latencyPerItemMs,
             int itemsToBufferEachIteration
